@@ -1,5 +1,9 @@
 name: custom client build
 
+permissions:
+  contents: write
+  actions: read
+
 on:
   workflow_dispatch:
     inputs:
@@ -86,16 +90,6 @@ jobs:
               flutter-arch: x64,
               vcpkg-triplet: x64-windows-static,
               build-args: "--vram",
-            }
-          - {
-              target: aarch64-pc-windows-msvc,
-              os: windows-11-arm,
-              arch: aarch64,
-              flutter-arch: arm64,
-              vcpkg-triplet: arm64-windows-static,
-              # vram is x86/x64-only (NVENC needs CUDA, Intel MediaSDK needs __rdtsc);
-              # no NV/Intel/AMD hardware exists on Windows-on-ARM, so vram stays disabled here.
-              build-args: "",
             }
     steps:
       - name: Export GitHub Actions cache environment variables
@@ -389,6 +383,14 @@ jobs:
           popd
           mkdir -p ./SignOutput
           mv ./target/release/rustdesk-portable-packer.exe ./SignOutput/rustdesk-${{ env.VERSION }}-${{ matrix.job.arch }}.exe
+
+      - name: Upload self-extracted exe (unsigned)
+        if: env.UPLOAD_ARTIFACT == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: rustdesk-x86_64-exe-unsigned
+          path: ./SignOutput/rustdesk-*.exe
+          if-no-files-found: error
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2
