@@ -3,6 +3,10 @@ name: custom client build
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build:
     uses: ./.github/workflows/flutter-build.yml
@@ -10,4 +14,3 @@ jobs:
       upload-artifact: true
       upload-tag: "custom"
       publish-update-metadata: false
-    secrets: inherit
