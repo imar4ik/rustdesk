@@ -1,0 +1,8 @@
+name: t reusable
+on:
+  workflow_call:
+jobs:
+  inner:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo inner-ok

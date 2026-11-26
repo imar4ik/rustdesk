@@ -1,0 +1,6 @@
+name: t caller
+on:
+  workflow_dispatch:
+jobs:
+  outer:
+    uses: ./.github/workflows/t-reusable.yml
