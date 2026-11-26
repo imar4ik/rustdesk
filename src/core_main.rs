@@ -63,6 +63,8 @@ pub fn core_main() -> Option<CoreMainAction> {
         // return None to terminate the process
         return None;
     }
+    // HERMES: заполняем настройки сервером/релеем/ключом из сборки (если пусты)
+    crate::common::apply_builtin_server();
     let mut args = Vec::new();
     let mut flutter_args = Vec::new();
     let mut i = 0;

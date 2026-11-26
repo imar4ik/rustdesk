@@ -128,6 +128,32 @@ pub fn init_sodium() {
     }
 }
 
+/// HERMES: сервер, релей и ключ, зашитые при сборке, прописываем в настройки,
+/// если они не заданы. Иначе клиент использует их как дефолт (и подключается
+/// правильно), но в интерфейсе поля «ID/Relay Server» и «Key» выглядят пустыми.
+pub fn apply_builtin_server() {
+    let host = config::RENDEZVOUS_SERVERS
+        .first()
+        .copied()
+        .unwrap_or_default();
+    if host.is_empty() {
+        return;
+    }
+    let pairs: [(&str, &str); 3] = [
+        ("custom-rendezvous-server", host),
+        ("relay-server", host),
+        ("key", config::RS_PUB_KEY),
+    ];
+    for (k, v) in pairs {
+        if v.is_empty() {
+            continue;
+        }
+        if Config::get_option(k).trim().is_empty() {
+            Config::set_option(k.to_owned(), v.to_owned());
+        }
+    }
+}
+
 pub fn global_init() -> bool {
     init_sodium();
     #[cfg(all(target_os = "linux", feature = "drm"))]
